@@ -28,3 +28,13 @@ func SumAllTails(array ...[]int) []int {
 	}
 	return sums
 }
+
+func ReturnSame(src *[]int) *[]int {
+	return src
+}
+
+func ReturnCopy(src []int) []int {
+	new := make([]int, len(src))
+	copy(new, src)
+	return new
+}

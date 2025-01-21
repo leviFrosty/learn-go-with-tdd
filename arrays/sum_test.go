@@ -47,3 +47,32 @@ func TestSumAllTails(t *testing.T) {
 		checkSums(t, got, want)
 	})
 }
+
+func TestReturnSame(t *testing.T) {
+	t.Run("Returns the same memory address", func(t *testing.T) {
+		original := []int{1, 2, 3}
+		got := ReturnSame(&original)
+		if &original != got {
+			t.Errorf("Got address '%p', want '%p'", got, &original)
+		}
+	})
+
+	t.Run("Returns the same value", func(t *testing.T) {
+		original := []int{1, 2, 3}
+		got := ReturnSame(&original)
+		if !slices.Equal(*got, original) {
+			t.Errorf("Got '%v', want '%v'", *got, original)
+		}
+	})
+}
+
+func TestReturnCopy(t *testing.T) {
+	original := []int{1, 2, 3}
+	got := ReturnCopy(original)
+	if !slices.Equal(original, got) {
+		t.Errorf("Got address '%p', want '%p'", got, &original)
+	}
+	if &original == &got {
+		t.Errorf("Got memory address '%p', which shouldn't match original '%p'", &got, &original)
+	}
+}
