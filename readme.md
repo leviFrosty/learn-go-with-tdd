@@ -1,6 +1,6 @@
 Please stand by, learning golang
 
-Website: https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/integers
+Book: https://quii.gitbook.io/learn-go-with-tests/go-fundamentals/integers
 
 # Things to remember
 
