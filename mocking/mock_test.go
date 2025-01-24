@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"reflect"
 	"testing"
 )
 
@@ -13,20 +14,53 @@ func (s *SpySleeper) Sleep() {
 	s.Calls++
 }
 
+type SpyCountdownOperations struct {
+	Calls []string
+}
+
+func (s *SpyCountdownOperations) Sleep() {
+	s.Calls = append(s.Calls, sleep)
+}
+
+func (s *SpyCountdownOperations) Write(p []byte) (n int, err error) {
+	s.Calls = append(s.Calls, write)
+	return
+}
+
+const write = "write"
+const sleep = "sleep"
+
 func TestCountdown(t *testing.T) {
-	buffer := bytes.Buffer{}
-	spySleeper := &SpySleeper{}
-	Countdown(&buffer, spySleeper)
-	got := buffer.String()
-	want := `3
+	t.Run("writes desired output", func(t *testing.T) {
+		buffer := bytes.Buffer{}
+		Countdown(&buffer, &SpyCountdownOperations{})
+		got := buffer.String()
+		want := `3
 2
 1
 Go!`
-	if got != want {
-		t.Errorf("want '%s' got '%s'", got, want)
-	}
+		if got != want {
+			t.Errorf("want '%s' got '%s'", got, want)
+		}
+	})
 
-	if spySleeper.Calls != 3 {
-		t.Errorf("Sleep was called incorrect amount of times, got '%d' want '%d'", spySleeper.Calls, 3)
-	}
+	t.Run("sleeps after each call", func(t *testing.T) {
+		spy := &SpyCountdownOperations{}
+		Countdown(spy, spy)
+		want := []string{
+			write,
+			sleep,
+			write,
+			sleep,
+			write,
+			sleep,
+			write,
+		}
+		got := spy.Calls
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("want calls '%q' got calls '%q'", want, got)
+		}
+	})
+
 }
